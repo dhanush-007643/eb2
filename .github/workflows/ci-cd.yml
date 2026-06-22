@@ -9,7 +9,7 @@ on:
       - main
 
 env:
-  DOCKER_IMAGE: your-dockerhub-username/chatbot-app
+  DOCKER_IMAGE: dhaanush19/chatbot-app
   K8S_DEPLOYMENT_NAME: chatbot-deployment
 
 jobs:
