@@ -9,7 +9,7 @@ on:
       - main
 
 env:
-  DOCKER_IMAGE: dhaanush19/chatbot-app
+  DOCKER_IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/eb2
   K8S_DEPLOYMENT_NAME: chatbot-deployment
 
 jobs:
@@ -36,36 +36,7 @@ jobs:
           push: true
           tags: ${{ env.DOCKER_IMAGE }}:${{ github.sha }}, ${{ env.DOCKER_IMAGE }}:latest
 
-  deploy-to-k8s:
-    name: Deploy to Kubernetes
-    runs-on: ubuntu-latest
-    needs: build-and-push
-    # Uncomment the condition below to only deploy when changes are pushed to main
-    # if: github.ref == 'refs/heads/main'
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-
-      - name: Set up Kubectl
-        uses: azure/setup-kubectl@v3
-        with:
-          version: 'latest'
-
-      - name: Configure Kubernetes Credentials
-        # This assumes you have a Kubeconfig stored as a GitHub Secret
-        run: |
-          mkdir -p ~/.kube
-          echo "${{ secrets.KUBECONFIG }}" > ~/.kube/config
-          chmod 600 ~/.kube/config
-
-      - name: Deploy to Cluster
-        run: |
-          # Apply service and deployment
-          kubectl apply -f k8s/service.yaml
-          kubectl apply -f k8s/deployment.yaml
-          
-          # Force update the image to the new commit SHA
-          kubectl set image deployment/${{ env.K8S_DEPLOYMENT_NAME }} chatbot-web=${{ env.DOCKER_IMAGE }}:${{ github.sha }}
-          
-          # Verify rollout status
-          kubectl rollout status deployment/${{ env.K8S_DEPLOYMENT_NAME }}
+  # The Kubernetes deployment step has been temporarily disabled.
+  # Since you are using Docker Desktop locally, GitHub Actions cannot connect
+  # to your personal machine to run 'kubectl apply'.
+  # You can run those commands manually on your local terminal!
